@@ -1,0 +1,185 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "entirius-backend"
+version = "0.1.0"
+description = "Backend API service for Entirius - an open-source e-commerce AI platform"
+readme = "README.md"
+license = {text = "MPL-2.0"}
+authors = [
+    {name = "Entirius Team", email = "team@entirius.com"},
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 5.0",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Office/Business",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+requires-python = ">=3.11"
+dependencies = [
+    "asgiref==3.8.1",
+    "Django==5.2.3",
+    "sqlparse==0.5.3",
+    "djangorestframework>=3.14,<4.0",
+    "django-cors-headers>=4.0,<5.0",
+    "psycopg2-binary>=2.9,<3.0",
+    "python-decouple>=3.8,<4.0",
+    "drf-spectacular>=0.27,<1.0",
+    "celery>=5.3,<6.0",
+    "redis>=4.5,<6.0",
+    "Pillow>=10.0,<11.0",
+    "django-filter>=23.0,<24.0",
+    "django-extensions>=3.2,<4.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black>=23.0,<24.0",
+    "flake8>=6.0,<7.0",
+    "isort>=5.12,<6.0",
+    "mypy>=1.0,<2.0",
+    "django-stubs>=4.2,<5.0",
+    "djangorestframework-stubs>=3.14,<4.0",
+    "pytest>=7.4,<8.0",
+    "pytest-django>=4.5,<5.0",
+    "pytest-cov>=4.1,<5.0",
+    "factory-boy>=3.3,<4.0",
+    "coverage>=7.0,<8.0",
+    "pre-commit>=3.0,<4.0",
+]
+test = [
+    "pytest>=7.4,<8.0",
+    "pytest-django>=4.5,<5.0",
+    "pytest-cov>=4.1,<5.0",
+    "factory-boy>=3.3,<4.0",
+    "coverage>=7.0,<8.0",
+]
+docs = [
+    "mkdocs>=1.5,<2.0",
+    "mkdocs-material>=9.0,<10.0",
+    "mkdocstrings[python]>=0.22,<1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/entirius/entirius-backend"
+Repository = "https://github.com/entirius/entirius-backend"
+Documentation = "https://github.com/entirius/entirius-backend#readme"
+Issues = "https://github.com/entirius/entirius-backend/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["main*", "apps*"]
+exclude = ["tests*", "venv*", "docker*", "scripts*"]
+
+[tool.black]
+line-length = 88
+target-version = ['py311']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | venv
+  | _build
+  | build
+  | dist
+  | migrations
+)/
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+known_django = "django"
+known_first_party = ["main", "apps"]
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "DJANGO", "FIRSTPARTY", "LOCALFOLDER"]
+skip_glob = ["*/migrations/*", "venv/*"]
+
+[tool.flake8]
+max-line-length = 88
+exclude = [
+    ".git",
+    "__pycache__",
+    "venv",
+    "migrations",
+    "build",
+    "dist",
+    ".tox",
+    ".mypy_cache",
+]
+ignore = [
+    "E203",  # whitespace before ':'
+    "E501",  # line too long (handled by black)
+    "W503",  # line break before binary operator
+]
+
+[tool.mypy]
+python_version = "3.11"
+check_untyped_defs = true
+ignore_missing_imports = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unused_configs = true
+plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
+
+[[tool.mypy.overrides]]
+module = "*.migrations.*"
+ignore_errors = true
+
+[tool.django-stubs]
+django_settings_module = "main.settings"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "main.settings.testing"
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
+addopts = [
+    "--reuse-db",
+    "--cov=.",
+    "--cov-report=html",
+    "--cov-report=term-missing",
+    "--cov-fail-under=80",
+]
+testpaths = ["tests"]
+
+[tool.coverage.run]
+source = "."
+omit = [
+    "*/venv/*",
+    "*/migrations/*",
+    "manage.py",
+    "*/settings/*",
+    "*/tests/*",
+    "*/__pycache__/*",
+    "*/static/*",
+    "*/media/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
